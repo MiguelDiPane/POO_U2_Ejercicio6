@@ -164,23 +164,62 @@ class FechaHora:
         if type(fechahora) == FechaHora:
             fecha1 = self.getData()
             fecha2 = fechahora.getData()
-            seResta = False
-            if fecha1[0] > fecha2[0]: #años no puedo restar años iguales para no tener año 0
-                if fecha1[1] > fecha2[1]: #meses, idem a año
-                    if fecha1[2] > fecha2[2]: #dias, idem a año
-                        if fecha1[3] >= fecha2[3]: #horas, si puedo tener hora 0
-                            if fecha1[4] >= fecha2[4]: #min, idem a hora
-                                if fecha1[5] >= fecha2[5]: #seg, idem a hora
-                                    seResta = True
+            if fecha1[0] >= fecha2[0]: #años no puedo restar años iguales para no tener año negativo
+                if fecha1[5] < fecha2[5]: #Pido 60 segundos
+                    fecha1[5] += 60
+                    fecha1[4] -=1
+                if fecha1[4] < fecha2[4]: #Pido 60 minutos
+                    fecha1[4] += 60
+                    fecha1[3] -= 1
+                if fecha1[3] < fecha2[3]: #Pido 24hs
+                    fecha1[3] += 24
+                    fecha1[2] -= 1
+
+                m = fecha1[1]
+                if fecha1[2] < fecha2[2]: #Pido dias segun mes
+                    if (m == 1 or m == 3 or m == 5 or m == 7 or m== 8 or m == 10 or m == 12):
+                        fecha1[2] += 31
+                    if (m == 4 or m == 6 or m == 9 or m == 11):
+                        fecha1[2] += 30
+                    if m == 2 and self.__detectarBisiesto(fecha1[0]):
+                        fecha1[2] += 29
+                    if m == 2 and not self.__detectarBisiesto(fecha1[0]):
+                        fecha1[2] += 28
+                    fecha1[1] -= 1  
+
+                if fecha1[1] < fecha2[1]: #Pido meses al anio
+                    fecha1[1] += 12
+                    fecha1[0] -= 1                
             fecha3 = []
-            if seResta:
-                for i in range(len(fecha1)):
-                    fecha3.append(fecha1[i] - fecha2[i])
-                fecha = FechaHora(fecha3[2],fecha3[1],fecha3[0],fecha3[3],fecha3[4],fecha3[5])
+            for i in range(len(fecha1)):
+                fecha3.append(fecha1[i] - fecha2[i])
+            
+            if fecha3[2] == 0 or fecha3[1] == 0: #Dia o mes dio cero imprimo resultados y devuevlo none
+                seg = fecha3[5]
+                seg += fecha3[4] * 60 #paso minutos a segundos
+                seg += fecha3[3] * 3600 #paso horas a segundos
+                seg += fecha3[2] * 24 * 3600 #paso dias a segundos
+                if (m == 1 or m == 3 or m == 5 or m == 7 or m== 8 or m == 10 or m == 12):
+                    d = 31
+                if (m == 4 or m == 6 or m == 9 or m == 11):
+                    d = 30
+                if m == 2 and self.__detectarBisiesto(fecha1[0]):
+                    d = 29
+                if m == 2 and not self.__detectarBisiesto(fecha1[0]):
+                    d = 28                
+                seg += fecha3[1] * 24 * 3600 * d #Paso meses a segundos
+                if self.__detectarBisiesto(fecha1[0]):
+                    d = 366
+                else:
+                    d = 365
+                seg += fecha3[0] * 24 * 3600 * d
+                print('Se muestra el resultado en segundos: {}'.format(seg))
+                return None
             else:
-                print('No se puede realizar la resta, se crea un objeto con parametros por defecto')
-                fecha = FechaHora()
-            return fecha
+                return FechaHora(fecha3[2],fecha3[1],fecha3[0],fecha3[3],fecha3[4],fecha3[5])
+        else:
+            print('No se puede realizar la resta, se crea un objeto con parametros por defecto')
+            return None
 
     def __gt__(self,fechahora):
         if type(fechahora) == FechaHora:

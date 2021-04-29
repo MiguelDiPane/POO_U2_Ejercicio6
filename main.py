@@ -73,7 +73,8 @@ if __name__ == '__main__':
             input('Presione ENTER para continuar...')
         elif op == 2:
             r3 = r1 - r2
-            r3.Mostrar()
+            if r3 != None:
+                r3.Mostrar()
             input('Presione ENTER para continuar...')
         elif op == 3:
             if r1 > r2:
