@@ -218,7 +218,7 @@ class FechaHora:
             else:
                 return FechaHora(fecha3[2],fecha3[1],fecha3[0],fecha3[3],fecha3[4],fecha3[5])
         else:
-            print('No se puede realizar la resta, se crea un objeto con parametros por defecto')
+            print('Error: No se puede realizar la resta')
             return None
 
     def __gt__(self,fechahora):
